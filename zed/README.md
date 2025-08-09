@@ -1,7 +1,0 @@
-# README
-
-## Introduction
-
-## Installation
-
-## Usage
