@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "src/app/api/generate/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_FAL_KEY": "@fal-key",
+    "FAL_KEY": "@fal-key"
+  }
+}

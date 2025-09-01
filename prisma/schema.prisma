@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  clerkId               String   @unique
+  email                 String   @unique
+  name                  String?
+  imageUrl              String?
+  subscription          String   @default("FREE")
+  creditsUsed           Int      @default(0)
+  creditsLimit          Int      @default(10)
+  subscriptionId        String?
+  customerId            String?
+  subscriptionStatus    String?
+  subscriptionPeriodEnd DateTime?
+  lastCreditReset       DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  generations           Generation[]
+  savedTemplates        SavedTemplate[]
+  creditPurchases       CreditPurchase[]
+
+  @@map("users")
+}
+
+model Generation {
+  id          String   @id @default(cuid())
+  userId      String
+  prompt      String
+  negativePrompt String?
+  imageUrl    String
+  imageSize   String
+  style       String?
+  width       Int
+  height      Int
+  seed        Int?
+  modelUsed   String   @default("fal-ai/flux/schnell")
+  creditsUsed Int      @default(1)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("generations")
+}
+
+model SavedTemplate {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  prompt      String
+  negativePrompt String?
+  imageSize   String
+  style       String?
+  category    String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_templates")
+}
+
+model CreditPurchase {
+  id          String   @id @default(cuid())
+  userId      String
+  credits     Int
+  amount      Float    // Amount paid in dollars
+  stripePaymentIntentId String?
+  status      String   @default("pending") // pending, completed, failed
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("credit_purchases")
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
